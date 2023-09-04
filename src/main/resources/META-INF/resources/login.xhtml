@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                template="login/templateLogin.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Bank challenge</ui:define>
+    <ui:define name="content">
+
+
+        <p:card>
+            <h:form id="loginForm">
+                <p:growl id="growl" showDetail="true"/>
+                <div id="div-principal" class="ui-fluid formgrid grid">
+                    <div class="field col-12 md:col-12">
+                        <p:outputLabel for="userName" styleClass="ui-sr-only" value="Email*"/>
+                        <p:inputText id="userName"
+                                     required="true"
+                                     value="#{loginController.loginUserDto.email}"
+                                     requiredMessage="El email es obligatorio" placeholder="Email*"/>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p:outputLabel for="password" styleClass="ui-sr-only" value="Contraseña*"/>
+                        <p:password id="password"
+                                    required="true"
+                                    value="#{loginController.loginUserDto.password}"
+                                    requiredMessage="La contraseña es obligatorio" placeholder="Contraseña*"/>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p:commandButton value="Iniciar sesión"  action="#{loginController.login()}"
+                                         update="loginForm"/>
+                    </div>
+                </div>
+            </h:form>
+        </p:card>
+
+    </ui:define>
+
+</ui:composition>

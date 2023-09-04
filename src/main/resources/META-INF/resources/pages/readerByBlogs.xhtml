@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                template="template.xhtml">
+
+    <ui:define name="title">Lectores por blog</ui:define>
+    <ui:define name="content">
+
+        <p:card>
+            <h:form id="form">
+                <p:growl id="messages" showDetail="false"/>
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="Nuevo registro" icon="pi pi-plus"
+                                         oncomplete="PF('readerDialog').show()"
+                                         update=":dialogs:manage-product-content"
+                                         actionListener="#{blogsReadersController.openDialog()}"
+                                         styleClass="ui-button-success" style="margin-right: .5rem">
+                            <p:resetInput target=":dialogs:manage-product-content"/>
+                        </p:commandButton>
+                        <p:commandButton id="delete-button" value="#{blogsReadersController.getDeleteButtonMessage()}"
+                                         icon="pi pi-trash"
+                                         actionListener="#{blogsReadersController.deleteRows()}"
+                                         styleClass="ui-button-danger"
+                                         update="@form"
+                                         disabled="#{!blogsReadersController.hasSelectedProducts()}">
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <p:dataTable id="readersData" value="#{blogsReadersController.listDatatable}" var="readerBlog"
+                             rowKey="#{readerBlog.id}"
+                             rows="10"
+                             reflow="true"
+                             rowSelectMode="add"
+                             editable="true"
+                             paginator="true"
+                             paginatorPosition="both"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                             rowsPerPageTemplate="5,10,20"
+                             selection="#{blogsReadersController.selectRows}"
+                             emptyMessage="No se han encontrado registros"
+                >
+                    <p:ajax event="rowSelect" update=":form:delete-button"/>
+                    <p:ajax event="rowUnselect" update=":form:delete-button"/>
+                    <p:ajax event="rowSelectCheckbox" update=":form:delete-button"/>
+                    <p:ajax event="rowUnselectCheckbox" update=":form:delete-button"/>
+                    <p:ajax event="toggleSelect" update=":form:delete-button"/>
+                    <p:column selectionMode="multiple" exportable="false"></p:column>
+                    <p:column headerText="Lector">
+                        <h:outputText value="#{readerBlog.reader.name}"/>
+                    </p:column>
+                    <p:column headerText="Blog">
+                        <h:outputText value="#{readerBlog.blog.title}"/>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton icon="pi pi-pencil" title="Editar registros"
+                                         oncomplete="PF('readerDialog').show()"
+                                         update=":dialogs:manage-product-content"
+                                         actionListener="#{blogsReadersController.openDialogEdit(readerBlog)}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:card>
+
+        <h:form id="dialogs">
+            <p:dialog header="Guardar lector por blog" showEffect="fade" modal="true" widgetVar="readerDialog"
+                      responsive="true">
+                <p:outputPanel id="manage-product-content" class="ui-fluid">
+                    <div class="field">
+                        <p:outputLabel for="lector">Lector</p:outputLabel>
+                        <p:selectOneMenu id="lector" value="#{blogsReadersController.readersDto}"
+                                         converter="omnifaces.SelectItemsConverter"
+                                         required="true" requiredMessage="El lector es obligatorio">
+                            <p:ajax listener="#{blogsReadersController.loadBlogByReader()}" update="blog"/>
+                            <f:selectItem itemLabel="Seleccionar un lector" itemValue="#{null}"/>
+                            <f:selectItems value="#{blogsReadersController.listReaders}"
+                                           var="reader" itemValue="#{reader}" itemLabel="#{reader.name}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="blog">Blog</p:outputLabel>
+                        <p:selectOneMenu id="blog" value="#{blogsReadersController.blogsDto}"
+                                         converter="omnifaces.SelectItemsConverter"
+                                         required="true" requiredMessage="El blog es obligatorio">
+                            <f:selectItem itemLabel="Seleccionar un blog" itemValue="#{null}"/>
+                            <f:selectItems value="#{blogsReadersController.listBlogs}"
+                                           var="blog" itemValue="#{blog}" itemLabel="#{blog.title}"/>
+                        </p:selectOneMenu>
+                    </div>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="Save" icon="pi pi-check" actionListener="#{blogsReadersController.save()}"
+                                     update="manage-product-content :form:messages :form:readersData"
+                                     process="manage-product-content @this"/>
+                    <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('readerDialog').hide()"
+                                     class="ui-button-secondary" type="button"/>
+                </f:facet>
+
+            </p:dialog>
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

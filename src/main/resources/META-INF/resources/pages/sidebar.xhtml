@@ -1,0 +1,31 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:po="http://primefaces.org/omega">
+    <h:form id="menuform">
+        <div class="sidebar">
+            <div class="sidebar-scroll-content">
+                <div class="logo">
+
+                    <p:graphicImage name="images/#{guestPreferences.menuColor eq 'light' ? 'omega-black.svg' : 'omega-white.svg'}"
+                                    library="omega-layout" width="113"/>
+
+                </div>
+                <div class="profile">
+                    <p:graphicImage name="banco.png" width="56" height="56"
+                                    library="images"/>
+                </div>
+                <div class="menu">
+                    <po:menu widgetVar="OmegaMenuWidget">
+                        <p:menuitem id="readers" value="Lectores" icon="pi pi-users" outcome="/pages/readers"/>
+                        <p:menuitem id="blogs" value="Blogs" icon="pi pi-book" outcome="/pages/blogs"/>
+                        <p:menuitem id="readerByBlogs" value="Lectores por blog" icon="pi pi-comments" outcome="/pages/readerByBlogs"/>
+                        <p:menuitem id="logoutSession" value="Cerrar sesión" icon="pi pi-fw pi-sign-out" action="#{loginController.logout()}"/>
+                    </po:menu>
+                </div>
+            </div>
+        </div>
+    </h:form>
+</ui:composition>

@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                template="template.xhtml">
+
+    <ui:define name="title">Blogs</ui:define>
+    <ui:define name="content">
+
+        <p:card>
+            <h:form id="form">
+                <p:growl id="messages" showDetail="false"/>
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="Nuevo registro" icon="pi pi-plus"
+                                         oncomplete="PF('readerDialog').show()"
+                                         styleClass="ui-button-success" style="margin-right: .5rem">
+                            <p:resetInput target=":dialogs:manage-product-content"/>
+                        </p:commandButton>
+                        <p:commandButton id="delete-button" value="#{blogsController.getDeleteButtonMessage()}"
+                                         icon="pi pi-trash"
+                                         actionListener="#{blogsController.deleteRows()}"
+                                         styleClass="ui-button-danger"
+                                         update="@form"
+                                         disabled="#{!blogsController.hasSelectedProducts()}">
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <p:dataTable id="readersData" value="#{blogsController.listDatatable}" var="reader"
+                             rowKey="#{reader.id}"
+                             rows="10"
+                             reflow="true"
+                             rowSelectMode="add"
+                             editable="true"
+                             paginator="true"
+                             paginatorPosition="both"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                             rowsPerPageTemplate="5,10,20"
+                             selection="#{blogsController.selectRows}"
+                             emptyMessage="No se han encontrado registros"
+                >
+                    <p:ajax event="rowSelect" update=":form:delete-button"/>
+                    <p:ajax event="rowUnselect" update=":form:delete-button"/>
+                    <p:ajax event="rowSelectCheckbox" update=":form:delete-button"/>
+                    <p:ajax event="rowUnselectCheckbox" update=":form:delete-button"/>
+                    <p:ajax event="toggleSelect" update=":form:delete-button"/>
+                    <p:ajax event="rowEdit" listener="#{blogsController.onRowEdit}" update=":form:messages"/>
+                    <p:ajax event="rowEditCancel" listener="#{blogsController.onRowCancel}" update=":form:messages"/>
+                    <p:column selectionMode="multiple" exportable="false"></p:column>
+                    <p:column headerText="Titulo">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{reader.title}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="modelInput" value="#{reader.title}" style="width:100%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Descripción">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{reader.description}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputTextarea id="modelInputDesc"
+                                                 rows="6"
+                                                 cols="33"
+                                                 maxlength="255"
+                                                 value="#{reader.description}"
+                                                 requiredMessage="Descripción es obligatorio"
+                                                 style="width:100%"
+                                                 required="true"/>
+                                <br />
+                                <h:outputText id="displays" />
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column width="20">
+                        <p:rowEditor editTitle="Editar fila" cancelTitle="Cancelar" saveTitle="Guardar fila"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:card>
+
+        <h:form id="dialogs">
+            <p:dialog header="Guardar lector" showEffect="fade" modal="true" widgetVar="readerDialog"
+                      responsive="true">
+                <p:outputPanel id="manage-product-content" class="ui-fluid">
+                    <div class="field">
+                        <p:outputLabel for="titleName">Titulo</p:outputLabel>
+                        <p:inputText id="titleName"
+                                     value="#{blogsController.blogsDto.title}"
+                                     requiredMessage="Titulo es obligatorio"
+                                     required="true"/>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="name">Descripción</p:outputLabel>
+                        <p:inputTextarea id="name"
+                                         rows="6"
+                                         cols="33"
+                                         maxlength="255"
+                                         value="#{blogsController.blogsDto.description}"
+                                         requiredMessage="Descripción es obligatorio"
+                                         required="true"/>
+                    </div>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="Save" icon="pi pi-check" actionListener="#{blogsController.save()}"
+                                     update="manage-product-content :form:messages :form:readersData"
+                                     process="manage-product-content @this"/>
+                    <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('readerDialog').hide()"
+                                     class="ui-button-secondary" type="button"/>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>
